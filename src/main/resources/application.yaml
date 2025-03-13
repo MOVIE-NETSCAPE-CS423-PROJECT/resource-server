@@ -1,0 +1,38 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: ResourceServer
+    group: com.movie-netscape
+    version: 1.0.0
+
+  cloud:
+    gateway:
+      routes:
+        - id: user-service-register
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/v1/users/{register}
+
+        - id: user-service-accounts
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/v1/accounts/**
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: TRACE
+    reactor.netty: DEBUG
+
+
+
+    org:
+      springframework:
+        security=DEBUG:
