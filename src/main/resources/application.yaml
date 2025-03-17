@@ -13,12 +13,18 @@ spring:
         - id: user-service-register
           uri: http://localhost:8083
           predicates:
-            - Path=/api/v1/users/{register}
+            - Path=/api/v1/users/{register},/api/v1/users/{verify}
+
 
         - id: user-service-accounts
           uri: http://localhost:8085
           predicates:
             - Path=/api/v1/accounts/**
+
+        - id: app-management
+          uri: http://localhost:8088
+          predicates:
+            - Path=/api/v1/app-management/**
 
   data:
     redis:

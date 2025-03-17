@@ -35,7 +35,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(auth -> auth
-                        .pathMatchers("/admin/**").hasRole("ADMIN")
+                        .pathMatchers("/api/v1/app-management/**").hasRole("ADMIN")
                         .pathMatchers("/api/v1/users/**").hasRole("USER")
                         .pathMatchers("/api/v1/accounts/**").hasRole("USER")
                 )
