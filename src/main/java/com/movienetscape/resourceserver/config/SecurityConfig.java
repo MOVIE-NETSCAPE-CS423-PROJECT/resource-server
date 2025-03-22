@@ -35,13 +35,15 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(auth -> auth
-                        .pathMatchers("/api/v1/app-management/**").hasRole("ADMIN")
                         .pathMatchers("/api/v1/users/**").hasRole("USER")
                         .pathMatchers("/api/v1/accounts/**").hasRole("USER")
+                        .pathMatchers("api/v1/auth/refresh-token").hasRole("USER")
+                        .pathMatchers("/api/v1/auth/logout").hasRole("USER")
+                        .anyExchange().authenticated()
                 )
+
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> {
-
                             jwt.jwtAuthenticationConverter(jwtAuthenticationConverter(revocationService));
                             jwt.jwkSetUri("http://localhost:8081/auth/key/jwks");
                         })
@@ -55,7 +57,7 @@ public class SecurityConfig {
         return new Converter<Jwt, Mono<AbstractAuthenticationToken>>() {
             @Override
             public Mono<AbstractAuthenticationToken> convert(Jwt jwt) {
-                String roles = jwt.getClaim("roles");
+                String role = jwt.getClaim("role");
                 String jti = jwt.getId();
 
                 return Mono.just(jwt)
@@ -67,7 +69,7 @@ public class SecurityConfig {
                             }
 
                             Collection<GrantedAuthority> authorities = new ArrayList<>();
-                            authorities.add(new SimpleGrantedAuthority("ROLE_" + roles));
+                            authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
                             return Mono.just((AbstractAuthenticationToken) new JwtAuthenticationToken(token, authorities));
                         });
             }
